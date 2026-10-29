@@ -17,7 +17,7 @@ Brief description of the SQL 'faker' generator for user data based on supported 
 
 **Role**
 
-Generates a deterministic pseudo-random value between 0 and 1 using MD5 hashing. Identical inputs always produce the same output, allowing reproducible data generation.
+Generates a deterministic pseudo-random value between 0 and 1 using MD5 hashing based on the function parameters. Identical inputs always produce the same output, allowing reproducible data generation.
 
 ### 2) `random_int`
 
