@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem;}
+        main { max-width: 1200px; margin: 0 auto; }
+        form { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; align-items: end; }
+        form p { margin: 0; }
+        label { display: block; font-weight: bold; margin-bottom: .35rem; }
+        input, select, button { box-sizing: border-box; font: inherit; padding: .55rem; width: 100%; }
+        button { border: 0; border-radius: 4px; background: midnightblue; color: white; }
+        .errors { color: red; }
+        .table-container { overflow: auto; max-height: 70vh; border: 1px solid whitesmoke; }
+        table { border-collapse: collapse; min-width: 1300px; width: 100%; }
+        th, td { border: 1px solid darkgrey; padding: .45rem; text-align: left; white-space: nowrap; }
+        th { background: white; position: sticky; top: 0; }
+        .navigation { display: flex; justify-content: space-between; gap: 1rem; margin: 1rem 0; }
+        .navigation a { color: darkblue; }
+        .hint { color: gray; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>User generator</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}
+                {{ field }}
+                {% for error in field.errors %}<span class="errors">{{ error }}</span>{% endfor %}
+            </p>
+        {% endfor %}
+        <button type="submit">Generate users</button>
+    </form>
+
+    {% if generation and batch_index != None %}
+        <h2>Generated users</h2>
+        <p>
+            Locale: <strong>{{ generation.locale }}</strong> |
+            Seed: <strong>{{ generation.seed }}</strong> |
+            Batch: <strong>{{ batch_index|add:"1" }} of {{ generation.number_of_batches }}</strong> |
+            Users per batch: <strong>{{ rows|length }}</strong> |
+            Total users: <strong>{{ total_users }}</strong>
+        </p>
+
+        <nav class="navigation" aria-label="Batch navigation">
+            {% if previous_batch != None %}
+                <a href="?batch={{ previous_batch }}">Previous batch</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+            {% if next_batch != None %}
+                <a href="?batch={{ next_batch }}">Next batch</a>
+            {% endif %}
+        </nav>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User index</th>
+                        <th>Full name</th>
+                        <th>Address</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Eye color</th>
+                        <th>Height (cm)</th>
+                        <th>Weight (kg)</th>
+                        <th>BMI</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            <td>{{ row.user_index }}</td>
+                            <td>{{ row.full_name }}</td>
+                            <td>{{ row.user_address }}</td>
+                            <td>{{ row.email }}</td>
+                            <td>{{ row.phone }}</td>
+                            <td>{{ row.eye_color }}</td>
+                            <td>{{ row.height_cm }}</td>
+                            <td>{{ row.weight_kg }}</td>
+                            <td>{{ row.bmi }}</td>
+                            <td>{{ row.latitude }}</td>
+                            <td>{{ row.longitude }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="11">No users were returned for this batch.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</main>
+</body>
+</html>
